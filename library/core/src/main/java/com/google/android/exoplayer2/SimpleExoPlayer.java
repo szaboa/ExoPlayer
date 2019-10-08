@@ -21,8 +21,10 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
 import android.media.PlaybackParams;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -50,6 +52,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultThermalLevelMeter;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Clock;
 import com.google.android.exoplayer2.util.Log;
@@ -92,6 +96,7 @@ public class SimpleExoPlayer extends BasePlayer
     private TrackSelector trackSelector;
     private LoadControl loadControl;
     private BandwidthMeter bandwidthMeter;
+    private ThermalLevelMeter thermalLevelMeter;
     private AnalyticsCollector analyticsCollector;
     private Looper looper;
     private boolean useLazyPreparation;
@@ -141,6 +146,7 @@ public class SimpleExoPlayer extends BasePlayer
           new DefaultTrackSelector(context),
           new DefaultLoadControl(),
           DefaultBandwidthMeter.getSingletonInstance(context),
+          DefaultThermalLevelMeter.getSingletonInstance(context),
           Util.getLooper(),
           new AnalyticsCollector(Clock.DEFAULT),
           /* useLazyPreparation= */ true,
@@ -171,6 +177,7 @@ public class SimpleExoPlayer extends BasePlayer
         TrackSelector trackSelector,
         LoadControl loadControl,
         BandwidthMeter bandwidthMeter,
+        ThermalLevelMeter thermalLevelMeter,
         Looper looper,
         AnalyticsCollector analyticsCollector,
         boolean useLazyPreparation,
@@ -180,6 +187,7 @@ public class SimpleExoPlayer extends BasePlayer
       this.trackSelector = trackSelector;
       this.loadControl = loadControl;
       this.bandwidthMeter = bandwidthMeter;
+      this.thermalLevelMeter = thermalLevelMeter;
       this.looper = looper;
       this.analyticsCollector = analyticsCollector;
       this.useLazyPreparation = useLazyPreparation;
@@ -222,6 +230,17 @@ public class SimpleExoPlayer extends BasePlayer
     public Builder setBandwidthMeter(BandwidthMeter bandwidthMeter) {
       Assertions.checkState(!buildCalled);
       this.bandwidthMeter = bandwidthMeter;
+      return this;
+    }
+
+    /**
+     * TODO
+     * @param thermalLevelMeter
+     * @return
+     */
+    public Builder setThermalLevelMeter(ThermalLevelMeter thermalLevelMeter){
+      Assertions.checkState(!buildCalled);
+      this.thermalLevelMeter = thermalLevelMeter;
       return this;
     }
 
@@ -298,6 +317,7 @@ public class SimpleExoPlayer extends BasePlayer
           trackSelector,
           loadControl,
           bandwidthMeter,
+          thermalLevelMeter,
           analyticsCollector,
           clock,
           looper);
@@ -319,6 +339,7 @@ public class SimpleExoPlayer extends BasePlayer
   private final CopyOnWriteArraySet<VideoRendererEventListener> videoDebugListeners;
   private final CopyOnWriteArraySet<AudioRendererEventListener> audioDebugListeners;
   private final BandwidthMeter bandwidthMeter;
+  private final ThermalLevelMeter thermalLevelMeter;
   private final AnalyticsCollector analyticsCollector;
 
   private final AudioFocusManager audioFocusManager;
@@ -367,6 +388,7 @@ public class SimpleExoPlayer extends BasePlayer
       TrackSelector trackSelector,
       LoadControl loadControl,
       BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter,
       AnalyticsCollector analyticsCollector,
       Clock clock,
       Looper looper) {
@@ -377,6 +399,7 @@ public class SimpleExoPlayer extends BasePlayer
         loadControl,
         DrmSessionManager.getDummyDrmSessionManager(),
         bandwidthMeter,
+        thermalLevelMeter,
         analyticsCollector,
         clock,
         looper);
@@ -408,10 +431,12 @@ public class SimpleExoPlayer extends BasePlayer
       LoadControl loadControl,
       @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
       BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter,
       AnalyticsCollector analyticsCollector,
       Clock clock,
       Looper looper) {
     this.bandwidthMeter = bandwidthMeter;
+    this.thermalLevelMeter = thermalLevelMeter;
     this.analyticsCollector = analyticsCollector;
     componentListener = new ComponentListener();
     videoListeners = new CopyOnWriteArraySet<>();
@@ -439,7 +464,15 @@ public class SimpleExoPlayer extends BasePlayer
 
     // Build the player and associated objects.
     player =
-        new ExoPlayerImpl(renderers, trackSelector, loadControl, bandwidthMeter, clock, looper);
+        new ExoPlayerImpl(
+            renderers,
+            trackSelector,
+            loadControl,
+            bandwidthMeter,
+            thermalLevelMeter,
+            clock,
+            looper);
+
     analyticsCollector.setPlayer(player);
     addListener(analyticsCollector);
     addListener(componentListener);

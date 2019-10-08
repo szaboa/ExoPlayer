@@ -36,6 +36,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectorResult;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Clock;
 import com.google.android.exoplayer2.util.HandlerWrapper;
@@ -91,6 +92,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
   private final TrackSelectorResult emptyTrackSelectorResult;
   private final LoadControl loadControl;
   private final BandwidthMeter bandwidthMeter;
+  private final ThermalLevelMeter thermalLevelMeter;
   private final HandlerWrapper handler;
   private final HandlerThread internalPlaybackThread;
   private final Handler eventHandler;
@@ -129,6 +131,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
       TrackSelectorResult emptyTrackSelectorResult,
       LoadControl loadControl,
       BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter,
       boolean playWhenReady,
       @Player.RepeatMode int repeatMode,
       boolean shuffleModeEnabled,
@@ -139,6 +142,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     this.emptyTrackSelectorResult = emptyTrackSelectorResult;
     this.loadControl = loadControl;
     this.bandwidthMeter = bandwidthMeter;
+    this.thermalLevelMeter = thermalLevelMeter;
     this.playWhenReady = playWhenReady;
     this.repeatMode = repeatMode;
     this.shuffleModeEnabled = shuffleModeEnabled;
@@ -163,7 +167,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     enabledRenderers = new Renderer[0];
     window = new Timeline.Window();
     period = new Timeline.Period();
-    trackSelector.init(/* listener= */ this, bandwidthMeter);
+    trackSelector.init(/* listener= */ this, bandwidthMeter, thermalLevelMeter);
 
     // Note: The documentation for Process.THREAD_PRIORITY_AUDIO that states "Applications can
     // not normally change to this priority" is incorrect.

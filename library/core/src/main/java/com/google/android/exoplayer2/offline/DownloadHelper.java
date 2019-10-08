@@ -49,6 +49,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
@@ -472,7 +473,10 @@ public final class DownloadHelper {
         new DefaultTrackSelector(trackSelectorParameters, new DownloadTrackSelection.Factory());
     this.rendererCapabilities = rendererCapabilities;
     this.scratchSet = new SparseIntArray();
-    trackSelector.init(/* listener= */ () -> {}, new DummyBandwidthMeter());
+    trackSelector.init(
+        /* listener= */ () -> {},
+        new DummyBandwidthMeter(),
+        new DummyThermalLevelMeter());
     callbackHandler = new Handler(Util.getLooper());
     window = new Timeline.Window();
   }
@@ -1112,6 +1116,29 @@ public final class DownloadHelper {
     @Override
     public void removeEventListener(EventListener eventListener) {
       // Do nothing.
+    }
+  }
+
+  private static final class DummyThermalLevelMeter implements ThermalLevelMeter {
+
+    @Override
+    public int getThermalLevel() {
+      return 0;
+    }
+
+    @Override
+    public void setMitigationListener(MitigationListener mitigationListener) {
+      // Do nothing
+    }
+
+    @Override
+    public void addEventListener(Handler eventHandler, EventListener eventListener) {
+      // Do nothing
+    }
+
+    @Override
+    public void removeEventListener(EventListener eventListener) {
+      // Do nothing
     }
   }
 }

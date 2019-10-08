@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectorResult;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Clock;
 import com.google.android.exoplayer2.util.Log;
@@ -100,6 +101,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
       TrackSelector trackSelector,
       LoadControl loadControl,
       BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter,
       Clock clock,
       Looper looper) {
     Log.i(TAG, "Init " + Integer.toHexString(System.identityHashCode(this)) + " ["
@@ -136,6 +138,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
             emptyTrackSelectorResult,
             loadControl,
             bandwidthMeter,
+            thermalLevelMeter,
             playWhenReady,
             repeatMode,
             shuffleModeEnabled,

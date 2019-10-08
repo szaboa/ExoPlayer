@@ -35,6 +35,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Clock;
 import com.google.android.exoplayer2.util.Util;
@@ -138,6 +139,7 @@ public interface ExoPlayer extends Player {
     private TrackSelector trackSelector;
     private LoadControl loadControl;
     private BandwidthMeter bandwidthMeter;
+    private ThermalLevelMeter thermalLevelMeter;
     private Looper looper;
     private AnalyticsCollector analyticsCollector;
     private boolean useLazyPreparation;
@@ -250,6 +252,12 @@ public interface ExoPlayer extends Player {
       return this;
     }
 
+    public Builder setThermalLevelMeter(ThermalLevelMeter thermalLevelMeter){
+      Assertions.checkState(!buildCalled);
+      this.thermalLevelMeter = thermalLevelMeter;
+      return this;
+    }
+
     /**
      * Sets the {@link Looper} that must be used for all calls to the player and that is used to
      * call listeners on.
@@ -318,7 +326,7 @@ public interface ExoPlayer extends Player {
       Assertions.checkState(!buildCalled);
       buildCalled = true;
       return new ExoPlayerImpl(
-          renderers, trackSelector, loadControl, bandwidthMeter, clock, looper);
+          renderers, trackSelector, loadControl, bandwidthMeter, thermalLevelMeter, clock, looper);
     }
   }
 

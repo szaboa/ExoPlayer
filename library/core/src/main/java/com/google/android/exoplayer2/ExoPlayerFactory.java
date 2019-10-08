@@ -26,6 +26,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultThermalLevelMeter;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.util.Clock;
 import com.google.android.exoplayer2.util.Util;
 
@@ -187,7 +189,8 @@ public final class ExoPlayerFactory {
       TrackSelector trackSelector,
       LoadControl loadControl,
       @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
-      BandwidthMeter bandwidthMeter) {
+      BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter) {
     return newSimpleInstance(
         context,
         renderersFactory,
@@ -195,6 +198,7 @@ public final class ExoPlayerFactory {
         loadControl,
         drmSessionManager,
         bandwidthMeter,
+        thermalLevelMeter,
         new AnalyticsCollector(Clock.DEFAULT),
         Util.getLooper());
   }
@@ -269,6 +273,7 @@ public final class ExoPlayerFactory {
         loadControl,
         drmSessionManager,
         DefaultBandwidthMeter.getSingletonInstance(context),
+        DefaultThermalLevelMeter.getSingletonInstance(context),
         analyticsCollector,
         looper);
   }
@@ -286,6 +291,7 @@ public final class ExoPlayerFactory {
       LoadControl loadControl,
       @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
       BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter,
       AnalyticsCollector analyticsCollector,
       Looper looper) {
     return new SimpleExoPlayer(
@@ -295,6 +301,7 @@ public final class ExoPlayerFactory {
         loadControl,
         drmSessionManager,
         bandwidthMeter,
+        thermalLevelMeter,
         analyticsCollector,
         Clock.DEFAULT,
         looper);
@@ -331,6 +338,7 @@ public final class ExoPlayerFactory {
         trackSelector,
         loadControl,
         DefaultBandwidthMeter.getSingletonInstance(context),
+        DefaultThermalLevelMeter.getSingletonInstance(context),
         looper);
   }
 
@@ -342,8 +350,15 @@ public final class ExoPlayerFactory {
       TrackSelector trackSelector,
       LoadControl loadControl,
       BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter,
       Looper looper) {
     return new ExoPlayerImpl(
-        renderers, trackSelector, loadControl, bandwidthMeter, Clock.DEFAULT, looper);
+        renderers,
+        trackSelector,
+        loadControl,
+        bandwidthMeter,
+        thermalLevelMeter,
+        Clock.DEFAULT,
+        looper);
   }
 }

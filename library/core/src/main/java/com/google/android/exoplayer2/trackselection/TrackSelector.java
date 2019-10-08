@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource.MediaPeriodId;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.ThermalLevelMeter;
 import com.google.android.exoplayer2.util.Assertions;
 
 /**
@@ -100,6 +101,7 @@ public abstract class TrackSelector {
 
   @Nullable private InvalidationListener listener;
   @Nullable private BandwidthMeter bandwidthMeter;
+  @Nullable private ThermalLevelMeter thermalLevelMeter;
 
   /**
    * Called by the player to initialize the selector.
@@ -107,10 +109,16 @@ public abstract class TrackSelector {
    * @param listener An invalidation listener that the selector can call to indicate that selections
    *     it has previously made are no longer valid.
    * @param bandwidthMeter A bandwidth meter which can be used by track selections to select tracks.
+   * @param thermalLevelMeter TODO
    */
-  public final void init(InvalidationListener listener, BandwidthMeter bandwidthMeter) {
+  public final void init(
+      InvalidationListener listener,
+      BandwidthMeter bandwidthMeter,
+      ThermalLevelMeter thermalLevelMeter) {
+
     this.listener = listener;
     this.bandwidthMeter = bandwidthMeter;
+    this.thermalLevelMeter = thermalLevelMeter;
   }
 
   /**
@@ -155,5 +163,13 @@ public abstract class TrackSelector {
    */
   protected final BandwidthMeter getBandwidthMeter() {
     return Assertions.checkNotNull(bandwidthMeter);
+  }
+
+  /**
+   * TODO
+   * @return
+   */
+  protected final ThermalLevelMeter getThermalLevelMeter() {
+    return Assertions.checkNotNull(thermalLevelMeter);
   }
 }
